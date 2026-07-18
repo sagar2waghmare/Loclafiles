@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Surprise For You</title>
+<style>
+  :root{
+    --midnight:#1a1035;
+    --midnight-deep:#120a26;
+    --hotpink:#ff2e88;
+    --gold:#ffd23f;
+    --lavender:#c9b6ff;
+    --cream:#fff8f0;
+    --teal:#3ee0c8;
+    --display: Georgia, 'Segoe UI', serif;
+    --body: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,46,136,0.18), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(62,224,200,0.15), transparent 45%),
+      var(--midnight-deep);
+    color:var(--cream);
+    font-family:var(--body);
+    overflow-x:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .stage{
+    width:100%;
+    max-width:640px;
+    min-height:80vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+  }
+  .hidden{display:none !important;}
+
+  /* ---------- Stage 0: Setup ---------- */
+  #stage0 h1{
+    font-family:var(--display);
+    font-size:clamp(28px,6vw,42px);
+    color:var(--gold);
+    margin:0 0 6px;
+    letter-spacing:0.5px;
+  }
+  #stage0 p.sub{color:var(--lavender); margin:0 0 32px; font-size:15px;}
+  .gift-box{
+    width:120px;height:110px;margin:0 auto 32px;position:relative;
+  }
+  .gift-box .base{
+    position:absolute;bottom:0;left:0;right:0;height:70px;
+    background:var(--hotpink); border-radius:6px;
+  }
+  .gift-box .lid{
+    position:absolute;top:20px;left:-6px;right:-6px;height:26px;
+    background:var(--teal); border-radius:6px;
+  }
+  .gift-box .ribbon-v{
+    position:absolute;top:0;bottom:0;left:50%;width:14px;margin-left:-7px;
+    background:var(--gold);
+  }
+  .gift-box .bow{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    font-size:28px;
+  }
+  input[type=text]{
+    font-family:var(--body);
+    font-size:17px;
+    padding:12px 16px;
+    border-radius:10px;
+    border:2px solid var(--lavender);
+    background:rgba(255,255,255,0.06);
+    color:var(--cream);
+    width:min(320px,80vw);
+    outline:none;
+    text-align:center;
+  }
+  input[type=text]::placeholder{color:rgba(255,248,240,0.5);}
+  input[type=text]:focus{border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,210,63,0.25);}
+  .btn{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:16px;
+    padding:13px 28px;
+    margin-top:20px;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    background:linear-gradient(135deg,var(--hotpink),#ff6bac);
+    color:var(--cream);
+    box-shadow:0 8px 20px rgba(255,46,136,0.35);
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 12px 24px rgba(255,46,136,0.45);}
+  .btn:focus-visible{outline:3px solid var(--gold); outline-offset:3px;}
+  .btn.secondary{background:linear-gradient(135deg,var(--teal),#2bb8a3); box-shadow:0 8px 20px rgba(62,224,200,0.3);}
+
+  /* ---------- Stage 1: Envelope ---------- */
+  #stage1 h2{font-family:var(--display); color:var(--gold); font-size:22px; margin-bottom:26px;}
+  .envelope-wrap{width:260px; height:180px; position:relative; margin:0 auto 26px; cursor:pointer;}
+  .envelope-body{
+    position:absolute; inset:0; background:var(--lavender); border-radius:8px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.35);
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; width:100%; height:0; overflow:hidden;
+    border-left:130px solid transparent; border-right:130px solid transparent;
+    border-top:90px solid #a894f0;
+    transform-origin:top center;
+    transition:transform 0.6s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .envelope-wrap.open .envelope-flap{ transform:rotateX(180deg); }
+  .letter{
+    position:absolute; left:14px; right:14px; bottom:-10px; height:120px;
+    background:var(--cream); border-radius:4px; color:#3a2a55;
+    display:flex; align-items:center; justify-content:center; padding:14px;
+    font-size:13px; line-height:1.5; transform:translateY(0); opacity:0;
+    transition:transform 0.5s ease 0.3s, opacity 0.5s ease 0.3s;
+  }
+  .envelope-wrap.open .letter{ transform:translateY(-40px); opacity:1; }
+  .envelope-hint{font-size:13px; color:var(--lavender); margin-top:6px;}
+
+  /* ---------- Stage 2: Balloons ---------- */
+  #stage2 h2{font-family:var(--display); color:var(--gold); font-size:22px; margin-bottom:8px;}
+  #stage2 p.sub{color:var(--lavender); font-size:14px; margin-bottom:10px;}
+  .balloon-field{
+    width:100%; height:340px; position:relative; margin:10px 0 8px;
+  }
+  .balloon{
+    position:absolute; width:64px; height:78px; border-radius:50% 50% 50% 50% / 55% 55% 45% 45%;
+    cursor:pointer; bottom:0; animation:float 4.5s ease-in-out infinite;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:inset -8px -8px 14px rgba(0,0,0,0.15);
+    transition:transform 0.15s ease;
+  }
+  .balloon:hover{transform:scale(1.06);}
+  .balloon:focus-visible{outline:3px solid var(--gold); outline-offset:4px;}
+  .balloon::after{
+    content:'▼'; position:absolute; bottom:-14px; font-size:10px; color:inherit;
+  }
+  .balloon.popped{ animation:none; visibility:hidden; }
+  @keyframes float{
+    0%,100%{transform:translateY(0) rotate(-3deg);}
+    50%{transform:translateY(-18px) rotate(3deg);}
+  }
+  .msg-bubble{
+    position:absolute; max-width:180px; background:var(--cream); color:#3a2a55;
+    border-radius:12px; padding:10px 12px; font-size:12.5px; line-height:1.4;
+    box-shadow:0 10px 24px rgba(0,0,0,0.3); opacity:0; transform:scale(0.6);
+    transition:transform 0.35s cubic-bezier(.2,.9,.3,1.4), opacity 0.35s ease;
+    pointer-events:none; z-index:5;
+  }
+  .msg-bubble.show{opacity:1; transform:scale(1);}
+  .balloon-progress{font-size:13px; color:var(--lavender); margin-bottom:6px;}
+
+  /* ---------- Stage 3: Cake ---------- */
+  #stage3 h2{font-family:var(--display); color:var(--gold); font-size:22px; margin-bottom:6px;}
+  #stage3 p.sub{color:var(--lavender); font-size:14px; margin-bottom:22px;}
+  .cake{ position:relative; width:220px; margin:0 auto 20px; }
+  .plate{ width:240px; height:14px; background:rgba(255,255,255,0.15); border-radius:50%; margin:0 -10px; }
+  .tier{ border-radius:10px; margin:0 auto; }
+  .tier1{ width:220px; height:60px; background:linear-gradient(180deg,#ffb6d9,#ff8fc4); }
+  .tier2{ width:170px; height:55px; background:linear-gradient(180deg,#c9b6ff,#a894f0); margin-top:-4px;}
+  .tier3{ width:120px; height:50px; background:linear-gradient(180deg,#ffe08a,var(--gold)); margin-top:-4px;}
+  .candles{ display:flex; justify-content:center; gap:14px; margin-bottom:-6px; position:relative; z-index:2;}
+  .candle{ width:8px; height:34px; background:linear-gradient(90deg,#fff,#e8e8e8); border-radius:3px; position:relative;}
+  .candle::before{ content:''; position:absolute; top:-3px; left:1px; right:1px; height:4px; background:#555; border-radius:2px;}
+  .flame{
+    position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    width:10px; height:16px; background:radial-gradient(circle at 50% 70%, #fff6c9, var(--gold) 60%, var(--hotpink) 100%);
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation:flicker 0.6s ease-in-out infinite alternate;
+    transition:opacity 0.2s ease;
+  }
+  @keyframes flicker{ 0%{transform:translateX(-50%) scale(1);} 100%{transform:translateX(-50%) scale(1.15) rotate(3deg);} }
+  .flame.out{ opacity:0; }
+  .blow-hint{ font-size:13px; color:var(--lavender); margin-top:26px; }
+  .wish-input{ margin-top:16px; }
+
+  /* ---------- Stage 4: Finale ---------- */
+  #stage4 h1{
+    font-family:var(--display); font-size:clamp(30px,7vw,48px); color:var(--gold);
+    margin:0 0 10px; text-shadow:0 4px 24px rgba(255,210,63,0.3);
+  }
+  #stage4 .name{ color:var(--hotpink); }
+  #stage4 p{ color:var(--cream); font-size:16px; max-width:440px; line-height:1.6; }
+  .confetti{
+    position:fixed; top:-20px; width:10px; height:16px; z-index:20; pointer-events:none;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(720deg); opacity:0.9; }
+  }
+  .replay{ margin-top:22px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .balloon, .flame, .envelope-flap, .letter, .confetti{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STAGE 0: name entry -->
+<div class="stage" id="stage0">
+  <div class="gift-box" aria-hidden="true">
+    <div class="ribbon-v"></div>
+    <div class="base"></div>
+    <div class="lid"></div>
+    <div class="bow">🎀</div>
+  </div>
+  <h1>Wrap Up a Surprise</h1>
+  <p class="sub">Type their name to personalize the whole thing.</p>
+  <input type="text" id="nameInput" placeholder="Their name" maxlength="24" autocomplete="off">
+  <br>
+  <button class="btn" id="startBtn">Wrap the Surprise 🎁</button>
+</div>
+
+<!-- STAGE 1: envelope -->
+<div class="stage hidden" id="stage1">
+  <h2 id="envelopeHeading">A letter has arrived...</h2>
+  <div class="envelope-wrap" id="envelope" tabindex="0" role="button" aria-label="Open the envelope">
+    <div class="envelope-flap"></div>
+    <div class="envelope-body"></div>
+    <div class="letter" id="letterText"></div>
+  </div>
+  <div class="envelope-hint">Tap the envelope to open it</div>
+  <button class="btn hidden" id="toBalloonsBtn">Next 🎈</button>
+</div>
+
+<!-- STAGE 2: balloons -->
+<div class="stage hidden" id="stage2">
+  <h2
